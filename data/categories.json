@@ -1,0 +1,50 @@
+[
+  {
+    "id": "ai",
+    "name": "Intelligenza Artificiale",
+    "description": "Modelli, agenti, robotica, ricerca e policy.",
+    "accent": "cyan"
+  },
+  {
+    "id": "tech",
+    "name": "Tecnologia",
+    "description": "Big tech, software, hardware, cybersecurity e innovazione.",
+    "accent": "violet"
+  },
+  {
+    "id": "geopolitica",
+    "name": "Geopolitica",
+    "description": "Conflitti, diplomazia, energia e tensioni globali.",
+    "accent": "blue"
+  },
+  {
+    "id": "finanza",
+    "name": "Finanza",
+    "description": "Macroeconomia, banche centrali e capitali.",
+    "accent": "teal"
+  },
+  {
+    "id": "mercati",
+    "name": "Mercati",
+    "description": "Azioni, crypto, commodities e segnali di volatilità.",
+    "accent": "amber"
+  },
+  {
+    "id": "startup",
+    "name": "Startup",
+    "description": "Nuove imprese, funding e modelli emergenti.",
+    "accent": "pink"
+  },
+  {
+    "id": "scienza",
+    "name": "Scienza",
+    "description": "Ricerca, scoperte e frontiere della conoscenza.",
+    "accent": "emerald"
+  },
+  {
+    "id": "futuro",
+    "name": "Curiosità / Futuro",
+    "description": "Segnali deboli, scenari e immaginari vicini.",
+    "accent": "orange"
+  }
+]

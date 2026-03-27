@@ -1,0 +1,163 @@
+[
+  {
+    "id": "ai-20260327-huawei-ascend-bytedance-alibaba-orders",
+    "category": "ai",
+    "subcategory": "Chip AI, procurement hyperscaler e sostituzione locale",
+    "title": "Huawei trova la prova del nove: ByteDance e Alibaba pronte a ordinare il nuovo chip AI",
+    "hook": "Reuters riferisce che ByteDance e Alibaba stanno pianificando ordini per il nuovo chip AI di Huawei. È il segnale più concreto della giornata sul fatto che in Cina la sostituzione di Nvidia può diventare domanda industriale, non solo indirizzo politico.",
+    "body": "Se gli ordini dei grandi gruppi internet si materializzano, Huawei guadagna molto più di una vittoria simbolica: ottiene volumi, casi d’uso e continuità per l’intero stack, dai server al software fino all’integrazione di sistema. In un contesto di controlli USA più rigidi, questo rende la filiera cinese dell’AI più autonoma e meno episodica.\n\nPer il mercato globale la lettura è doppia. Da un lato aumenta la pressione competitiva su Nvidia nel mercato cinese; dall’altro cresce il rischio di ecosistemi hardware sempre più separati, con standard e toolchain meno interoperabili. L’AI continua così a spostarsi dal terreno dei modelli a quello del potere industriale.",
+    "tags": [
+      "Huawei",
+      "ByteDance",
+      "Alibaba",
+      "chip AI",
+      "Cina"
+    ],
+    "sourceLabel": "Reuters",
+    "sourceUrl": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNNUV5d0I0b2ZxMDFnMXZRV0NxZzdhWFR1UkV3bmJzN1E4c1UyS0Yya3ZNSE1TUnhENmo0ck0tcE5pX3hKV0VBeXRPd29mTmQ2cEZzS0lrZlU0aFEwenBRR0xwMUpac2tfOEsxTEM4dm8xbWt3R0hseUtlUXp2S2ZiOVRSOWZYbW4wVmxjekVoYmV1MWRqZkQwTkx6cTVsN3oxak9MYlRJbHF0TG1sckY4a2hZQllGOThUM2JxRkVwcUVvM0Na?oc=5",
+    "sourceCount": 1,
+    "timestamp": "2026-03-27T07:53:00+01:00",
+    "featured": true,
+    "opinion": "Se la domanda interna regge, Huawei smette di essere una risposta tattica e diventa una piattaforma industriale.",
+    "qualityScore": 95,
+    "visual": "ai"
+  },
+  {
+    "id": "tech-20260327-supermicro-restricted-ai-chips-china-military-links",
+    "category": "tech",
+    "subcategory": "Export control, server AI e università con legami militari",
+    "title": "I controlli USA mostrano una falla: università cinesi legate ai militari hanno acquistato server Super Micro con chip AI limitati",
+    "hook": "Reuters riferisce che università cinesi con legami militari hanno comprato server Super Micro equipaggiati con chip AI soggetti a restrizioni. È una storia forte perché sposta il dibattito dall’annuncio dei controlli alla loro reale tenuta sul campo.",
+    "body": "Il punto non è solo chi abbia comprato l’hardware, ma cosa dice questo episodio sull’efficacia pratica dei regimi di export control. Se componenti sensibili riescono comunque a entrare in ambienti considerati critici, la competizione tecnologica si sposta ancora di più su tracciabilità, compliance dei distributori e responsabilità della supply chain.\n\nPer Washington è un promemoria scomodo: limitare un chip sulla carta non equivale automaticamente a governarne la destinazione finale. Per le aziende del settore, invece, il rischio cresce su due fronti insieme — reputazionale e regolatorio — proprio mentre i mercati chiedono più crescita e meno ambiguità geopolitica.",
+    "tags": [
+      "Super Micro",
+      "chip AI",
+      "controlli export",
+      "Cina",
+      "università"
+    ],
+    "sourceLabel": "Reuters",
+    "sourceUrl": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNVVd5M1BnNC01RmtiNms4Vlg1clZ0MXZlclpYWF80MDhkUjg3eEFJT18wVGo2U1VMSTZWZXJfdDkzcndLX1FfM3ZKb2Frc0dSanVyZzMyTTRBY2ZvMW51RmVsbjJtcjZMcG41QzFDb3hhNXRtWlUxSXg5V1luWVlTWFlyZUJKR3hWOTc0WHpLV0RLNG03UTB4RUpneXpIZ2k4RHE5bnhNVXJVVmV1S05jUzF3VGxlQjVtWkVaSA?oc=5",
+    "sourceCount": 1,
+    "timestamp": "2026-03-27T07:16:00+01:00",
+    "featured": true,
+    "opinion": "I controlli tecnologici contano davvero solo se reggono fino all’ultimo passaggio della filiera.",
+    "qualityScore": 93,
+    "visual": "tech"
+  },
+  {
+    "id": "startup-20260327-softbank-openai-40bn-loan",
+    "category": "startup",
+    "subcategory": "Mega-financing AI, leva finanziaria e alleanze di piattaforma",
+    "title": "SoftBank si carica 40 miliardi di debito per OpenAI: la corsa AI entra nell’era dei bilanci titanici",
+    "hook": "Reuters riferisce che SoftBank ha ottenuto un prestito da 40 miliardi di dollari per rafforzare gli investimenti in OpenAI. Il segnale resta uno dei più netti dell’edizione: nell’AI la scala finanziaria sta diventando una barriera competitiva quasi quanto il talento tecnico.",
+    "body": "Un’operazione di questa taglia cambia il vocabolario del settore. Non si parla più soltanto di venture capital o round privati, ma di capacità di bilancio, leva e sostegno pluriennale a infrastrutture, cloud, distribuzione e acquisizione utenti. In un mercato dove il costo di compute ed energia resta enorme, il capitale paziente vale quasi quanto il prodotto.\n\nPer il resto dell’ecosistema il messaggio è duro ma chiarissimo: chi non può accedere a finanziamenti profondi rischia di restare schiacciato fra hyperscaler, conglomerati e alleanze industriali. L’AI continua a sembrare una rivoluzione software, ma la sua velocità viene decisa sempre più da chi può permettersi anni di intensità di capitale.",
+    "tags": [
+      "SoftBank",
+      "OpenAI",
+      "prestito",
+      "funding",
+      "AI"
+    ],
+    "sourceLabel": "Reuters",
+    "sourceUrl": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNRVRFbHZ5a3lqS2I4VWE4cmhmaHR6V0pvWHNQY1BHZ0ZZRTM5V1dsR2Uzckl2SjNRc0lDdmJEakhmWVhxQ1RwR1hqSXVLRzI3ZFY3eXY4MjFMRWNBSEdaU2FnTkNvM0JHazVvRFZDdUVvTm01SWI3dGJ2eGhQcGFNOFpzVmt5VjVPWkpXNDhPcUJQNTRzN3laVTc3Q1F4WmN0dWhmU2NFdEdQTThzQW5pX1Q1cHZjSXdWNmRuWURFRQ?oc=5",
+    "sourceCount": 1,
+    "timestamp": "2026-03-27T11:56:22+01:00",
+    "featured": true,
+    "opinion": "Quando servono decine di miliardi per restare nella partita, l’AI smette di essere un gioco per startup normali.",
+    "qualityScore": 94,
+    "visual": "startup"
+  },
+  {
+    "id": "geopolitica-20260327-chinese-ships-hormuz-safe-passage",
+    "category": "geopolitica",
+    "subcategory": "Hormuz, shipping energetico e fiducia geopolitica",
+    "title": "Le rassicurazioni non bastano più: navi cinesi fermano l’uscita da Hormuz e misurano il prezzo della sfiducia",
+    "hook": "Reuters riferisce che alcune navi cinesi hanno interrotto il tentativo di uscire dallo Stretto di Hormuz nonostante le rassicurazioni iraniane sul passaggio sicuro. È una delle storie più concrete del giorno perché mostra la crisi nel comportamento reale di chi trasporta energia e commercio.",
+    "body": "Quando anche operatori abituati al pragmatismo commerciale scelgono di fermarsi, significa che la fiducia marittima si è già deteriorata oltre il livello delle dichiarazioni diplomatiche. Il rischio non si scarica solo sul petrolio: tocca premi assicurativi, noli, tempi di consegna e pianificazione delle rotte in tutta la regione.\n\nPer Cina e Asia importatrice di energia il segnale è strategico. Se Hormuz diventa instabile anche senza una chiusura formale, governi e compagnie devono ripensare rapidamente coperture, scorte e posture negoziali. È così che la sfiducia geopolitica entra direttamente nei flussi globali.",
+    "tags": [
+      "Hormuz",
+      "Cina",
+      "shipping",
+      "Iran",
+      "energia"
+    ],
+    "sourceLabel": "Reuters",
+    "sourceUrl": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxPTnpxV09iaWVVaXM3dU9vYS15TFdJZndMYTFIM2VMcmxzMjBfc0puRFRsQzdKUWxzaGlJLW9jRTNURk5LMWJrWUxHT1RtbnVPZkdoXzhuWlc2SjY2c19nOG82MWpicEItcE5vMVN0VU9FWms2RkNVTk1IWDc4ejN2U2YxcXZLTWZRbFhtWVA3Z3JIN3A0YlEyQU9UeWFFc0VMdXRwVVBWdXRQbUNhbnUyVXFQZkVrSGR3X1dSQTBzZDg?oc=5",
+    "sourceCount": 1,
+    "timestamp": "2026-03-27T17:39:05+01:00",
+    "featured": true,
+    "opinion": "Quando le navi si fermano prima dei governi, la crisi è già entrata nei prezzi e nelle decisioni operative.",
+    "qualityScore": 95,
+    "visual": "geo"
+  },
+  {
+    "id": "finanza-20260327-emerging-markets-debt-freeze-iran-war",
+    "category": "finanza",
+    "subcategory": "Debito sovrano, mercato primario e stress di funding",
+    "title": "La crisi con l’Iran congela il debito emergente: il mercato primario si richiude nel momento peggiore",
+    "hook": "Reuters riferisce che la forte corsa alle emissioni dei Paesi emergenti si sta inceppando mentre il conflitto con l’Iran irrigidisce Treasury, dollaro e premio per il rischio. È una lettura finanziaria chiave perché mostra dove la geopolitica colpisce subito la capacità di finanziarsi.",
+    "body": "Quando il mercato primario rallenta, i governi emergenti perdono la finestra per rifinanziarsi a condizioni ancora gestibili e diventano più vulnerabili a nuovi shock su energia, valute e crescita. Il problema non è soltanto pagare di più, ma dover rinviare emissioni proprio nel momento in cui la volatilità rende più preziosa la flessibilità di cassa.\n\nPer i mercati sviluppati è un segnale anticipatore utile. Se il risk-off si prolunga, le prime fratture del capitale globale tendono a comparire nella periferia del debito prima di propagarsi al resto degli asset. È lì che si capisce se la tensione resta episodio o diventa restrizione più strutturale.",
+    "tags": [
+      "mercati emergenti",
+      "debito sovrano",
+      "funding",
+      "Iran",
+      "tassi"
+    ],
+    "sourceLabel": "Reuters",
+    "sourceUrl": "https://news.google.com/rss/articles/CBMiywFBVV95cUxQZTFOMHFGa2U0cThFTXZPcnhCaTd6VGtkT1RlUVNneTNabzdiZUtaWXNuUlRSY25TTW0tRHlCS18zYzdrTW5SMjk0ekxJanJnbzVSQVpsMzU2YUhKNTBTcXVLRjZhYVd1SEc3MVdyeDlVWnZDV3U2ZmpMZXE4bDlaN28za2ttZUdQQVlTQXNCUVFaS1c3RHdBVHR0T01aVzlyR3hTb0NFT1h4Y0VwWjljUmlneGpzQnFtSW5MR1oxNzd0ZEJFZWlNaFhXVQ?oc=5",
+    "sourceCount": 1,
+    "timestamp": "2026-03-27T13:15:47+01:00",
+    "featured": false,
+    "opinion": "Il vero costo dei conflitti energetici si vede presto dove il capitale diventa improvvisamente più selettivo.",
+    "qualityScore": 92,
+    "visual": "fin"
+  },
+  {
+    "id": "mercati-20260327-wall-street-correction-middle-east",
+    "category": "mercati",
+    "subcategory": "Azionario USA, correzione e shock geopolitico",
+    "title": "Wall Street entra in correzione: il Dow certifica che la crisi mediorientale non è più rumore di fondo",
+    "hook": "Reuters segnala che i listini USA stanno arretrando mentre il Dow Jones entra in territorio di correzione sotto il peso delle tensioni in Medio Oriente. Il mercato non tratta più il conflitto come scossa tattica: sta rivalutando crescita, energia e costo del rischio insieme.",
+    "body": "Quando il Dow conferma la correzione e il sell-off si allarga agli indici guida, il repricing smette di essere un problema confinato ai titoli più esposti e diventa lettura sistemica. Energia più cara, minore visibilità sui tassi e premio per il rischio più alto colpiscono in parallelo growth, ciclici e sentiment.\n\nPer gli investitori la novità non è solo il rosso di seduta, ma la qualità del movimento: meno buy-the-dip automatico, più domanda di difesa e liquidità. Se questa fase regge, il mercato USA entra in un tratto in cui conta molto più la resilienza dei flussi che la narrativa dell’atterraggio morbido.",
+    "tags": [
+      "Dow Jones",
+      "Wall Street",
+      "correzione",
+      "Middle East",
+      "risk-off"
+    ],
+    "sourceLabel": "Reuters",
+    "sourceUrl": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQb09zaXpJQWtLeTJUeG82MC1qTks1Y2t4TnlhMk56bEpIT2JwQzJVWEx5eFQ3RFdVbG0wQUt2WGNxY3VzdG1xcVVuWUo2MUpMNVhXU2dRWEtwTW9PRHRRcV9HaUhFYXZzeE44Zjhnc2Mxdkw3VUh0TkhTTXlzTmNMTGVrZmV6b1c4NnU4SUJ4bDFSSWdGZkxtaDl0X1hFeE84UFhwUkM5VC1wLUp2c0E?oc=5",
+    "sourceCount": 1,
+    "timestamp": "2026-03-27T20:05:00+01:00",
+    "featured": true,
+    "opinion": "Quando il Dow entra in correzione, il mercato sta già dicendo che la geopolitica ha cambiato il prezzo del rischio.",
+    "qualityScore": 94,
+    "visual": "markets"
+  },
+  {
+    "id": "futuro-20260327-nasa-artemis-final-preparations",
+    "category": "futuro",
+    "subcategory": "Spazio, programma lunare e preparazione missione",
+    "title": "Artemis entra nel conto alla rovescia: la NASA porta gli astronauti alle prove finali per il ritorno umano verso la Luna",
+    "hook": "Reuters riferisce che gli astronauti di Artemis sono entrati nella fase finale di preparazione alla missione lunare. È una storia da futuro concreto: meno concept, più disciplina operativa su una catena industriale e istituzionale che vuole tornare a volare oltre l’orbita bassa.",
+    "body": "Le prove finali contano perché trasformano il programma Artemis da roadmap politica a esecuzione ad alta affidabilità. Addestramento, integrazione dei sistemi e coordinamento tra NASA e partner industriali sono il vero banco di prova di una strategia spaziale che punta a continuità, non a una singola missione vetrina.\n\nPer industria e geopolitica dello spazio il segnale è chiaro: il ritorno alla Luna resta uno dei pochi progetti capaci di tenere insieme tecnologia, supply chain avanzata, prestigio nazionale e ricadute industriali di lungo periodo. Quando la preparazione entra nel dettaglio finale, il futuro smette di sembrare trailer e torna a sembrare programma.",
+    "tags": [
+      "NASA",
+      "Artemis",
+      "Luna",
+      "spazio",
+      "missione"
+    ],
+    "sourceLabel": "Reuters",
+    "sourceUrl": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQeXFhNkpQTU4wUF93SDJCT1ljNUE2dlFnQVdrWFV4NW1LVC11cjNyRjNLRWNOUzhRRTFxV3dvRFlKRHYwN19WenhrMTdyQW16Uzh5emtBOFZndVlWYURqeDFzMEV2c0F1em9vQld0aWp2cnJKTkRGR2k5ZC0tR3k1V2RYaHNZQm45U1ByYUpjNzdFbFdwSkJjcnNaRlMwUnBNZUxRQkVyc0pDQQ?oc=5",
+    "sourceCount": 1,
+    "timestamp": "2026-03-27T14:16:44+01:00",
+    "featured": false,
+    "opinion": "Le missioni contano davvero quando il prestigio smette di essere slogan e diventa routine di esecuzione.",
+    "qualityScore": 89,
+    "visual": "future"
+  }
+]

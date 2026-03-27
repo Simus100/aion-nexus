@@ -1,0 +1,10 @@
+{
+  "months": [
+    {
+      "key": "2026-03",
+      "label": "marzo 2026",
+      "file": "../../data/history/2026-03.json",
+      "count": 174
+    }
+  ]
+}

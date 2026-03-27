@@ -1,0 +1,36 @@
+{
+  "editionUpdatedAt": "2026-03-27T23:05:00+01:00",
+  "newsGeneratedToday": 7,
+  "sourcesAnalyzed": 22,
+  "topicEmerging": [
+    "La competizione AI si sposta dal vantaggio di modello alla capacità industriale di produrre, distribuire e finanziare hardware e piattaforme",
+    "I controlli tecnologici USA contano meno come annuncio e più come test di enforcement lungo l’ultima tratta della filiera",
+    "Hormuz resta il punto in cui la sfiducia geopolitica entra più rapidamente in shipping, energia e assicurazioni",
+    "Il conflitto con l’Iran sta irrigidendo funding sovrano, dollaro e premio per il rischio ben oltre il comparto petrolifero",
+    "Wall Street tratta la crisi mediorientale come fattore di correzione più strutturale, non come volatilità passeggera",
+    "Nello spazio la narrativa torna concreta quando Artemis passa dalle slide alle prove finali di missione"
+  ],
+  "mostViewed": [
+    "Huawei trova la prova del nove: ByteDance e Alibaba pronte a ordinare il nuovo chip AI",
+    "Le rassicurazioni non bastano più: navi cinesi fermano l’uscita da Hormuz e misurano il prezzo della sfiducia",
+    "Wall Street entra in correzione: il Dow certifica che la crisi mediorientale non è più rumore di fondo"
+  ],
+  "signals": [
+    {
+      "label": "Edition",
+      "value": "Public MVP"
+    },
+    {
+      "label": "Cadence",
+      "value": "Hourly auto-refresh · 23:05 CET"
+    },
+    {
+      "label": "Mode",
+      "value": "Italian briefing"
+    },
+    {
+      "label": "Focus",
+      "value": "Source-backed news"
+    }
+  ]
+}
