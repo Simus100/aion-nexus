@@ -98,6 +98,130 @@ docs/      Architecture notes, runbooks, quality plans, rollback guides, and roa
 
 The project uses a pragmatic static-first architecture. Generated data and pages are committed as public artifacts, so the site can be served without a complex backend while still supporting recurring editorial automation.
 
+## How The System Works
+
+AION NEXUS separates the intelligence workflow into four layers:
+
+1. **Data layer**: JSON files under `data/` hold the current edition, statistics, categories, and historical archives.
+2. **Generation layer**: Python scripts under `scripts/` refresh the edition, validate data, build story pages, create the Aion Brief page, enrich report metadata, and regenerate the sitemap.
+3. **Publishing layer**: static HTML, CSS, JavaScript, images, reports, story pages, `robots.txt`, and `sitemap.xml` live under `site/`.
+4. **Distribution layer**: the site can be served by any static host or simple HTTP server, with no runtime database requirement.
+
+This means the public experience is generated ahead of time. The browser loads static HTML and JSON, while the editorial automation happens before publication. That architecture keeps the product fast, inspectable, portable, and resilient.
+
+## Data Flow
+
+The normal publishing flow is:
+
+```text
+sources / candidates
+  -> refresh edition
+  -> validate JSON
+  -> update current edition data
+  -> archive historical items
+  -> generate static story pages
+  -> generate Aion Brief page
+  -> enrich report SEO metadata
+  -> regenerate sitemap
+  -> publish static artifacts
+```
+
+The most important public data files are:
+
+- `data/news.json`: current edition stories used by the homepage and public briefing.
+- `data/stats.json`: edition metadata, update time, editorial notes, and public signals.
+- `data/categories.json`: category taxonomy and presentation metadata.
+- `data/history/index.json`: index of historical months and archive files.
+- `data/history/*.json`: persistent monthly story archives.
+
+The key public output files are:
+
+- `site/index.html`: main public interface.
+- `site/history.html`: historical archive interface.
+- `site/aion-brief.html`: daily synthesis page.
+- `site/reports.html`: report index.
+- `site/reports/items/*.html`: standalone long-form reports.
+- `site/stories/*.html`: generated static story pages.
+- `site/sitemap.xml`: search engine discovery map.
+
+## Script Workflow
+
+The main local refresh entry point is:
+
+```bash
+scripts/run_nexus_refresh_local.sh
+```
+
+It runs the core generation chain:
+
+```bash
+python3 scripts/refresh_edition_stable.py
+python3 scripts/generate_story_pages.py
+python3 scripts/generate_aion_brief_page.py
+python3 scripts/enhance_report_seo.py
+python3 scripts/generate_sitemap.py
+```
+
+At the end, it prints hashes and edition metadata so the generated artifacts can be checked before publishing.
+
+### Core Scripts
+
+- `refresh_edition_stable.py`: refreshes the current public edition and writes the main JSON artifacts used by the site.
+- `validate_nexus_json.py`: checks that the current edition data is valid before publication.
+- `archive_news_monthly.py`: supports historical archive maintenance by organizing stories into monthly files.
+- `generate_story_pages.py`: converts structured stories into standalone static HTML pages with canonical URLs, Open Graph metadata, Twitter cards, and JSON-LD.
+- `generate_aion_brief_page.py`: builds the public `Aion Brief` synthesis page from the current edition.
+- `generate_aion_brief_image.py`: generates or updates the editorial image used by the brief and social previews.
+- `enhance_report_seo.py`: adds canonical metadata, social preview tags, and structured data to report pages.
+- `generate_sitemap.py`: scans public pages, generated stories, and reports, then writes `site/sitemap.xml`.
+- `run_nexus_brief_daily.sh`, `run_nexus_brief_image_daily.sh`, and `run_nexus_brief_page_daily.sh`: smaller daily jobs for refreshing brief-related artifacts.
+- `run_nexus_refresh_orchestrated.sh` and `finalize_orchestrated_refresh.py`: orchestration helpers for more controlled refresh flows.
+- `serve_nexus.py`: local serving helper for development and inspection.
+- `rollback_quality_seo_20260630.sh`: rollback utility for a known quality and SEO recovery point.
+
+### Report Publishing
+
+Reports are designed as standalone HTML experiences under:
+
+```text
+site/reports/items/
+```
+
+After adding or editing a report, the expected flow is:
+
+```bash
+python3 scripts/enhance_report_seo.py
+python3 scripts/generate_sitemap.py
+```
+
+This keeps report pages discoverable, shareable, and aligned with the rest of the public intelligence product.
+
+### Story Page Generation
+
+Story pages are generated from structured JSON data. The generator:
+
+- slugifies each story into a stable static URL;
+- writes a complete HTML page for each story;
+- embeds SEO metadata and structured data;
+- preserves source attribution and category context;
+- adds related stories for internal navigation;
+- uses the shared site design system and visual category classes.
+
+The result is a set of public URLs that can be indexed, shared, archived, and linked independently from the homepage.
+
+### Sitemap And Discovery
+
+`generate_sitemap.py` builds the public sitemap from:
+
+- the homepage;
+- the history page;
+- the Aion Brief page;
+- the reports index;
+- generated story pages;
+- report item pages.
+
+The sitemap uses edition timestamps where available and file modification times where appropriate. This helps search engines understand what changed and which public pages matter most.
+
 ## Run Locally
 
 From the project root:
