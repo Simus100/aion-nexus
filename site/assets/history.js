@@ -122,10 +122,13 @@ async function fetchJson(url) {
 }
 
 async function fetchMonth(month) {
-  if (!month?.file) return [];
-  if (monthCache.has(month.file)) return monthCache.get(month.file);
-  const payload = await fetchJson(month.file);
-  monthCache.set(month.file, payload);
+  const files = Array.isArray(month?.files) && month.files.length ? month.files : (month?.file ? [month.file] : []);
+  if (!files.length) return [];
+  const cacheKey = files.join('|');
+  if (monthCache.has(cacheKey)) return monthCache.get(cacheKey);
+  const payloads = await Promise.all(files.map((file) => fetchJson(file)));
+  const payload = payloads.flat();
+  monthCache.set(cacheKey, payload);
   return payload;
 }
 
