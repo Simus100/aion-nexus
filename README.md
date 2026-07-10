@@ -222,22 +222,6 @@ The result is a set of public URLs that can be indexed, shared, archived, and li
 
 The sitemap uses edition timestamps where available and file modification times where appropriate. This helps search engines understand what changed and which public pages matter most.
 
-## Run Locally
-
-From the project root:
-
-```bash
-python3 -m http.server 4173
-```
-
-Then open:
-
-```text
-http://localhost:4173/site/
-```
-
-A local server is recommended because the frontend loads JSON files with `fetch()`.
-
 ## Useful Commands
 
 ```bash
