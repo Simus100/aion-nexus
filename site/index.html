@@ -23,18 +23,39 @@
     <meta property="og:locale" content="it_IT" />
     <meta property="og:title" content="AION NEXUS — Briefing pubblico su AI, tech e mercati" />
     <meta property="og:description" content="Una homepage editoriale che organizza i segnali chiave su AI, tecnologia, geopolitica, finanza, mercati, startup e scienza." />
-    <meta property="og:url" content="./index.html" />
-    <meta property="og:image" content="./assets/aion-brief-generated.jpg" />
+    <meta property="og:url" content="https://nexus.universalis.it/site/" />
+    <meta property="og:image" content="https://nexus.universalis.it/site/assets/aion-brief-generated.jpg" />
     <meta property="og:image:alt" content="Visual editoriale di AION NEXUS" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="AION NEXUS — Briefing pubblico su AI, tech e mercati" />
     <meta name="twitter:description" content="Una homepage editoriale che organizza i segnali chiave su AI, tecnologia, geopolitica, finanza, mercati, startup e scienza." />
-    <meta name="twitter:image" content="./assets/aion-brief-generated.jpg" />
-    <link rel="canonical" href="./index.html" />
+    <meta name="twitter:image" content="https://nexus.universalis.it/site/assets/aion-brief-generated.jpg" />
+    <link rel="canonical" href="https://nexus.universalis.it/site/" />
     <link rel="icon" href="./assets/aion-brief-generated.jpg" />
-    <link rel="stylesheet" href="./assets/styles.css?v=20260326-1758" />
+    <link rel="prefetch" href="./reports.html" />
+    <link rel="prefetch" href="./history.html" />
+    <link rel="prefetch" href="./assets/history.js?v=20260614-fast-mobile" />
+    <link rel="prefetch" href="../data/history/index.json" />
+    <link rel="prefetch" href="../data/history/2026-06.json" />
+    <link rel="stylesheet" href="./assets/styles.css?v=20260708-floating-nav" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "AION NEXUS",
+        "url": "https://nexus.universalis.it/site/",
+        "inLanguage": "it-IT",
+        "description": "AION NEXUS organizza segnali editoriali su AI, tecnologia, geopolitica, finanza, mercati, startup e scienza.",
+        "publisher": {
+          "@type": "Organization",
+          "name": "Universalis Produzioni",
+          "url": "https://nexus.universalis.it/"
+        }
+      }
+    </script>
     <style>
       .breaking-strip { display: none !important; }
+      #radar { display: none !important; }
     </style>
   </head>
   <body>
@@ -48,14 +69,10 @@
         <div class="brand-sub">Automation Intelligence by Universalis Produzioni</div>
       </div>
       <nav class="topnav">
-        <a href="#top-news">Top stories</a>
-        <a href="#focus">Focus</a>
-        <a href="#radar">Radar</a>
-        <a href="#metrics">Metriche</a>
-        <a href="./aion-brief.html">Aion Brief</a>
+        <a href="./index.html" aria-current="page">Home</a>
+        <a href="./reports.html" class="topnav-report-link">Report</a>
         <a href="./history.html" class="topnav-history-link">History</a>
       </nav>
-      <a href="./history.html" class="mobile-history-link" aria-label="Apri storico notizie">📚</a>
     </header>
 
     <main class="container page-shell">
@@ -72,14 +89,20 @@
           </p>
           <div class="hero-share-strip">
             <span class="hero-share-label">Condividi AION NEXUS</span>
-            <div id="homepage-share-actions" class="share-actions share-actions-home"></div>
+            <div id="homepage-share-actions" class="share-host"></div>
           </div>
         </div>
+      </section>
+      <div id="hero-signals" hidden></div>
 
-        <aside class="hero-meta-card">
-          <div class="mini-kicker">Session signals</div>
-          <div id="hero-signals" class="signal-list"></div>
-        </aside>
+      <section class="reports-home-teaser" aria-label="Nuova sezione report">
+        <div class="reports-home-copy">
+          <span class="reports-home-badge">Novità</span>
+          <div>
+            <h2>Nuova area Report AI</h2>
+          </div>
+        </div>
+        <a class="reports-home-link" href="./reports.html">Apri report <span>→</span></a>
       </section>
 
       <section class="section-block live-layout latest-top">
@@ -109,7 +132,7 @@
             <span class="aion-brief-label">Considerazioni di Aion</span>
             <span id="aion-brief-freshness" class="aion-brief-freshness">In aggiornamento</span>
           </div>
-          <div id="aion-brief-share-actions" class="share-actions share-actions-home"></div>
+          <div id="aion-brief-share-actions" class="share-host"></div>
           <div class="aion-brief-image-wrap">
             <img src="./assets/aion-brief-generated.jpg" alt="Visual editoriale generato dalla sintesi del giorno" class="aion-brief-image" loading="lazy" />
           </div>

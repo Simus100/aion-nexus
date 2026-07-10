@@ -1,0 +1,8 @@
+# Run once per day at 23:05 Europe/Rome, five minutes after the last scheduled daily refresh.
+# Install with the appropriate user crontab on the production host.
+# Example:
+#   CRON_TZ=Europe/Rome
+#   5 23 * * * /root/.openclaw/workspace/aion-nexus/scripts/run_nexus_brief_daily.sh >> /root/.openclaw/workspace/aion-nexus/tmp/brief-daily.log 2>&1
+
+CRON_TZ=Europe/Rome
+5 23 * * * /root/.openclaw/workspace/aion-nexus/scripts/run_nexus_brief_daily.sh >> /root/.openclaw/workspace/aion-nexus/tmp/brief-daily.log 2>&1

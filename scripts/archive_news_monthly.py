@@ -73,11 +73,16 @@ def main():
         dump_json(month_path, merged)
 
     months = []
+    story_to_month = {}
     for path in sorted(HISTORY_DIR.glob('*.json')):
         if path.name == 'index.json':
             continue
         key = path.stem
         items = load_json(path, [])
+        for entry in items:
+            story_id = entry.get('id')
+            if story_id:
+                story_to_month[story_id] = key
         months.append({
             'key': key,
             'label': month_label(key),
@@ -85,7 +90,7 @@ def main():
             'count': len(items),
         })
     months.sort(key=lambda entry: entry['key'], reverse=True)
-    dump_json(INDEX_PATH, {'months': months})
+    dump_json(INDEX_PATH, {'months': months, 'storyToMonth': story_to_month})
     print(json.dumps({'index': str(INDEX_PATH), 'months': len(months), 'touched': sorted(touched)}))
 
 

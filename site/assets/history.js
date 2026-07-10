@@ -1,5 +1,10 @@
 const categoriesUrl = '../../data/categories.json';
 const historyIndexUrl = '../../data/history/index.json';
+const DESKTOP_INITIAL_ITEMS_PER_CATEGORY = 12;
+const MOBILE_INITIAL_ITEMS_PER_CATEGORY = 3;
+const DESKTOP_LOAD_MORE_STEP = 12;
+const MOBILE_LOAD_MORE_STEP = 6;
+const MOBILE_BREAKPOINT = 900;
 
 const visualClassMap = {
   ai: 'visual-ai',
@@ -11,6 +16,35 @@ const visualClassMap = {
   science: 'visual-science',
   future: 'visual-future',
 };
+
+const monthCache = new Map();
+const groupedCache = new Map();
+let currentCategories = [];
+let currentNews = [];
+let currentVisibleByCategory = new Map();
+let currentRequestedStoryId = null;
+let currentActiveMonthKey = null;
+let currentActiveStoryId = null;
+let currentOpenCategoryId = null;
+let latestCategories = [];
+let latestIndex = null;
+let currentMedia = null;
+
+function isMobileView() {
+  return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
+}
+
+function initialItemsPerCategory() {
+  return isMobileView() ? MOBILE_INITIAL_ITEMS_PER_CATEGORY : DESKTOP_INITIAL_ITEMS_PER_CATEGORY;
+}
+
+function loadMoreStep() {
+  return isMobileView() ? MOBILE_LOAD_MORE_STEP : DESKTOP_LOAD_MORE_STEP;
+}
+
+function shouldSmoothScroll() {
+  return !isMobileView() && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
 
 function storyPageSlug(storyId) {
   return String(storyId || 'story')
@@ -87,6 +121,25 @@ async function fetchJson(url) {
   return response.json();
 }
 
+async function fetchMonth(month) {
+  if (!month?.file) return [];
+  if (monthCache.has(month.file)) return monthCache.get(month.file);
+  const payload = await fetchJson(month.file);
+  monthCache.set(month.file, payload);
+  return payload;
+}
+
+function groupedByCategory(categories, news) {
+  const cacheKey = `${currentActiveMonthKey || 'month'}:${news.length}`;
+  if (groupedCache.has(cacheKey)) return groupedCache.get(cacheKey);
+  const grouped = Object.fromEntries(categories.map((category) => [
+    category.id,
+    news.filter((item) => item.category === category.id).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)),
+  ]));
+  groupedCache.set(cacheKey, grouped);
+  return grouped;
+}
+
 function fmtDate(ts) {
   const d = new Date(ts);
   return d.toLocaleString('it-IT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -161,14 +214,119 @@ function renderMonthChips(months, activeKey) {
   `).join('');
 }
 
+function historyItemMarkup(item) {
+  return `
+    <article class="history-item" data-id="${item.id}">
+      <div class="history-item-top">
+        <span class="meta-pill">${fmtDate(item.timestamp)}</span>
+        <span class="meta-pill">${item.sourceLabel || 'Fonte'}</span>
+      </div>
+      <h3>${item.title}</h3>
+      <p>${item.hook || ''}</p>
+    </article>
+  `;
+}
+
+function getVisibleCount(categoryId, itemsLength) {
+  const fallback = initialItemsPerCategory();
+  const current = currentVisibleByCategory.get(categoryId) || fallback;
+  return Math.min(current, itemsLength);
+}
+
+function renderCategoryList(section, items, categoryId) {
+  const list = section.querySelector('.history-list');
+  if (!list) return;
+  const visible = getVisibleCount(categoryId, items.length);
+  const shown = items.slice(0, visible);
+  const hasMore = items.length > shown.length;
+  const step = loadMoreStep();
+  list.innerHTML = shown.length
+    ? `${shown.map(historyItemMarkup).join('')}${hasMore ? `<button class="history-load-more source-link" type="button" data-category="${categoryId}">Mostra altri ${Math.min(step, items.length - shown.length)}</button>` : ''}`
+    : '<div class="history-item"><p>Nessuna notizia in questa categoria.</p></div>';
+}
+
+function ensureOpenCategoryVisibility() {
+  if (currentOpenCategoryId && currentCategories.some((category) => category.id === currentOpenCategoryId)) {
+    return;
+  }
+  const grouped = groupedByCategory(currentCategories, currentNews);
+  const firstWithItems = currentCategories.find((category) => (grouped[category.id] || []).length > 0);
+  currentOpenCategoryId = firstWithItems?.id || currentCategories[0]?.id || null;
+}
+
+function syncOpenCategories() {
+  const host = document.getElementById('history-sidebar');
+  if (!host) return;
+  ensureOpenCategoryVisibility();
+  host.querySelectorAll('.history-category').forEach((section) => {
+    const isOpen = section.dataset.id === currentOpenCategoryId;
+    section.classList.toggle('open', isOpen);
+  });
+}
+
+function setOpenCategory(categoryId) {
+  if (!categoryId) return;
+  currentOpenCategoryId = categoryId;
+  if (isMobileView()) {
+    const grouped = groupedByCategory(currentCategories, currentNews);
+    const section = document.getElementById('history-sidebar')?.querySelector(`.history-category[data-id="${categoryId}"]`);
+    if (section) renderCategoryList(section, grouped[categoryId] || [], categoryId);
+  }
+  syncOpenCategories();
+}
+
+function activateItem(itemId, options = {}) {
+  const item = currentNews.find((entry) => entry.id === itemId);
+  if (!item) return;
+  currentActiveStoryId = item.id;
+  const host = document.getElementById('history-sidebar');
+  const category = currentCategories.find((entry) => entry.id === item.category);
+  const grouped = groupedByCategory(currentCategories, currentNews);
+  const categoryItems = grouped[item.category] || [];
+  const itemIndex = categoryItems.findIndex((entry) => entry.id === item.id);
+  if (itemIndex >= 0) {
+    const baseVisible = initialItemsPerCategory();
+    const requiredVisible = Math.max(baseVisible, itemIndex + 1);
+    if ((currentVisibleByCategory.get(item.category) || baseVisible) < requiredVisible) {
+      currentVisibleByCategory.set(item.category, requiredVisible);
+      const section = host?.querySelector(`.history-category[data-id="${item.category}"]`);
+      if (section) renderCategoryList(section, categoryItems, item.category);
+    }
+  }
+  setOpenCategory(item.category);
+  host?.querySelectorAll('.history-item').forEach((el) => el.classList.remove('active'));
+  const node = host?.querySelector(`.history-item[data-id="${item.id}"]`);
+  if (node) {
+    node.classList.add('active');
+    if (options.scrollSidebar && !isMobileView()) {
+      node.scrollIntoView({ block: 'nearest' });
+    }
+  }
+  renderDetail(item, category);
+  const url = new URL(window.location.href);
+  url.searchParams.set('story', item.id);
+  window.history.replaceState({ story: item.id }, '', url.toString());
+  if (options.scrollDetail) {
+    document.getElementById('history-detail')?.scrollIntoView({ behavior: shouldSmoothScroll() ? 'smooth' : 'auto', block: 'start' });
+  }
+}
+
+function initializeVisibleCounts(categories, grouped) {
+  const baseVisible = initialItemsPerCategory();
+  currentVisibleByCategory = new Map(categories.map((category) => {
+    const items = grouped[category.id] || [];
+    return [category.id, Math.min(baseVisible, items.length)];
+  }));
+}
+
 function renderSidebar(categories, news) {
   const host = document.getElementById('history-sidebar');
-  const grouped = Object.fromEntries(categories.map((category) => [
-    category.id,
-    news.filter((item) => item.category === category.id).sort(byTimestampDesc),
-  ]));
+  currentCategories = categories;
+  currentNews = news;
+  const grouped = groupedByCategory(categories, news);
+  initializeVisibleCounts(categories, grouped);
 
-  host.innerHTML = categories.map((category, idx) => {
+  host.innerHTML = categories.map((category) => {
     const items = grouped[category.id] || [];
     return `
       <section class="history-category" data-id="${category.id}">
@@ -179,102 +337,132 @@ function renderSidebar(categories, news) {
           </span>
           <span class="history-category-chevron">▾</span>
         </button>
-        <div class="history-list">
-          ${items.length ? items.map((item) => `
-            <article class="history-item" data-id="${item.id}">
-              <div class="history-item-top">
-                <span class="meta-pill">${fmtDate(item.timestamp)}</span>
-                <span class="meta-pill">${item.sourceLabel || 'Fonte'}</span>
-              </div>
-              <h3>${item.title}</h3>
-              <p>${item.hook || ''}</p>
-            </article>
-          `).join('') : '<div class="history-item"><p>Nessuna notizia in questa categoria.</p></div>'}
-        </div>
+        <div class="history-list"></div>
       </section>
     `;
   }).join('');
 
-  host.querySelectorAll('.history-category-head').forEach((button) => {
-    button.addEventListener('click', () => {
-      button.parentElement.classList.toggle('open');
-    });
-  });
-
-  host.querySelectorAll('.history-item').forEach((node) => {
-    node.addEventListener('click', () => {
-      const item = news.find((entry) => entry.id === node.dataset.id);
-      if (!item) return;
-      const category = categories.find((entry) => entry.id === item.category);
-      host.querySelectorAll('.history-item').forEach((el) => el.classList.remove('active'));
-      node.classList.add('active');
-      renderDetail(item, category);
-      const url = new URL(window.location.href);
-      url.searchParams.set('story', item.id);
-      window.history.replaceState({ story: item.id }, '', url.toString());
-      document.getElementById('history-detail')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  });
-
-  const requestedStoryId = new URL(window.location.href).searchParams.get('story');
-  const first = (requestedStoryId ? news.find((entry) => entry.id === requestedStoryId) : null) || news.slice().sort(byTimestampDesc)[0];
+  const first = (currentRequestedStoryId ? news.find((entry) => entry.id === currentRequestedStoryId) : null) || news.slice().sort(byTimestampDesc)[0];
   if (first) {
-    const firstNode = host.querySelector(`.history-item[data-id="${first.id}"]`);
-    if (firstNode) {
-      firstNode.classList.add('active');
-      firstNode.closest('.history-category')?.classList.add('open');
+    currentOpenCategoryId = first.category;
+    categories.forEach((category) => {
+      const section = host.querySelector(`.history-category[data-id="${category.id}"]`);
+      if (section && (!isMobileView() || category.id === currentOpenCategoryId)) {
+        renderCategoryList(section, grouped[category.id] || [], category.id);
+      }
+    });
+    if (!isMobileView() || currentRequestedStoryId) {
+      activateItem(first.id, { scrollSidebar: false, scrollDetail: false });
+    } else {
+      syncOpenCategories();
+      const detail = document.getElementById('history-detail');
+      if (detail) detail.innerHTML = '<div class="history-empty">Scegli una notizia dallo storico per aprire il dettaglio.</div>';
     }
-    renderDetail(first, categories.find((entry) => entry.id === first.category));
   } else {
+    ensureOpenCategoryVisibility();
+    syncOpenCategories();
     const detail = document.getElementById('history-detail');
     if (detail) detail.innerHTML = '<div class="history-empty">Nessuna notizia archiviata per questo mese.</div>';
   }
+  syncOpenCategories();
 }
 
 async function loadMonth(categories, month) {
-  const payload = await fetchJson(month.file);
+  currentActiveMonthKey = month?.key || null;
+  const payload = await fetchMonth(month);
   renderSidebar(categories, payload);
 }
 
-Promise.all([fetchJson(categoriesUrl), fetchJson(historyIndexUrl)])
-  .then(async ([categories, index]) => {
-    const months = index.months || [];
-    if (!months.length) {
-      const detail = document.getElementById('history-detail');
-      if (detail) detail.innerHTML = '<div class="history-empty">Archivio mensile non ancora disponibile.</div>';
+async function bootstrap() {
+  const [categories, index] = await Promise.all([fetchJson(categoriesUrl), fetchJson(historyIndexUrl)]);
+  latestCategories = categories;
+  latestIndex = index;
+  const months = index.months || [];
+  if (!months.length) {
+    const detail = document.getElementById('history-detail');
+    if (detail) detail.innerHTML = '<div class="history-empty">Archivio mensile non ancora disponibile.</div>';
+    return;
+  }
+  currentRequestedStoryId = new URL(window.location.href).searchParams.get('story');
+  let active = months[0];
+  if (currentRequestedStoryId && index.storyToMonth?.[currentRequestedStoryId]) {
+    active = months.find((month) => month.key === index.storyToMonth[currentRequestedStoryId]) || active;
+  }
+  renderMonthChips(months, active.key);
+  await loadMonth(categories, active);
+
+  document.getElementById('history-months')?.querySelectorAll('.history-month-chip').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const key = button.dataset.key;
+      const month = months.find((entry) => entry.key === key);
+      if (!month) return;
+      currentRequestedStoryId = new URL(window.location.href).searchParams.get('story');
+      document.querySelectorAll('.history-month-chip').forEach((el) => el.classList.remove('active'));
+      button.classList.add('active');
+      await loadMonth(categories, month);
+    });
+  });
+
+  const sidebar = document.getElementById('history-sidebar');
+  sidebar?.addEventListener('click', (event) => {
+    const head = event.target.closest('.history-category-head');
+    if (head) {
+      const categoryId = head.parentElement.dataset.id;
+      if (isMobileView()) {
+        const parent = head.parentElement;
+        const isAlreadyOpen = parent.classList.contains('open');
+        if (isAlreadyOpen) {
+          const grouped = groupedByCategory(currentCategories, currentNews);
+          const firstWithItems = currentCategories.find((category) => category.id !== categoryId && (grouped[category.id] || []).length > 0);
+          setOpenCategory(firstWithItems?.id || categoryId);
+        } else {
+          setOpenCategory(categoryId);
+        }
+      } else {
+        head.parentElement.classList.toggle('open');
+      }
       return;
     }
-    const requestedStoryId = new URL(window.location.href).searchParams.get('story');
-    let active = months[0];
-    if (requestedStoryId) {
-      for (const month of months) {
-        try {
-          const payload = await fetchJson(month.file);
-          if (Array.isArray(payload) && payload.some((item) => item.id === requestedStoryId)) {
-            active = month;
-            break;
-          }
-        } catch (error) {
-          console.warn('Failed to inspect history month', month.file, error);
-        }
+
+    const loadMore = event.target.closest('.history-load-more');
+    if (loadMore) {
+      const categoryId = loadMore.dataset.category;
+      const current = currentVisibleByCategory.get(categoryId) || initialItemsPerCategory();
+      currentVisibleByCategory.set(categoryId, current + loadMoreStep());
+      const grouped = groupedByCategory(currentCategories, currentNews);
+      const section = sidebar.querySelector(`.history-category[data-id="${categoryId}"]`);
+      if (section) {
+        renderCategoryList(section, grouped[categoryId] || [], categoryId);
+        setOpenCategory(categoryId);
       }
+      return;
     }
-    renderMonthChips(months, active.key);
-    await loadMonth(categories, active);
-    document.getElementById('history-months')?.querySelectorAll('.history-month-chip').forEach((button) => {
-      button.addEventListener('click', async () => {
-        const key = button.dataset.key;
-        const month = months.find((entry) => entry.key === key);
-        if (!month) return;
-        document.querySelectorAll('.history-month-chip').forEach((el) => el.classList.remove('active'));
-        button.classList.add('active');
-        await loadMonth(categories, month);
-      });
-    });
-  })
-  .catch((error) => {
-    const host = document.getElementById('history-detail');
-    if (host) {
-      host.innerHTML = `<div class="history-empty">Impossibile caricare la pagina history.<br /><small>${error.message}</small></div>`;
+
+    const itemNode = event.target.closest('.history-item[data-id]');
+    if (itemNode) {
+      activateItem(itemNode.dataset.id, { scrollSidebar: false, scrollDetail: true });
     }
   });
+
+  currentMedia = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+  const mediaHandler = () => {
+    if (!latestCategories || !currentNews.length) return;
+    groupedCache.clear();
+    renderSidebar(latestCategories, currentNews);
+    if (currentActiveStoryId) {
+      activateItem(currentActiveStoryId, { scrollSidebar: false, scrollDetail: false });
+    }
+  };
+  if (currentMedia.addEventListener) {
+    currentMedia.addEventListener('change', mediaHandler);
+  } else if (currentMedia.addListener) {
+    currentMedia.addListener(mediaHandler);
+  }
+}
+
+bootstrap().catch((error) => {
+  const host = document.getElementById('history-detail');
+  if (host) {
+    host.innerHTML = `<div class="history-empty">Impossibile caricare la pagina history.<br /><small>${error.message}</small></div>`;
+  }
+});

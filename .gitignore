@@ -9,3 +9,14 @@ __pycache__/
 .DS_Store
 
 tmp/
+
+# Local operational backups and restore staging
+backups/
+trash-history/
+*.bak
+*.bak-*
+*.bak.*
+*.pre-*.bak
+
+# Generated static story pages are produced during refresh/publish.
+site/stories/

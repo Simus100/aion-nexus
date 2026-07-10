@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import html
+import re
 from pathlib import Path
 
 ROOT = Path('/root/.openclaw/workspace/aion-nexus')
@@ -27,6 +28,21 @@ def fmt(ts: str) -> str:
     return ts.replace('T', ' ').replace('+01:00', ' CET').replace('+02:00', ' CEST')
 
 
+def clean_public_hook(text: str, source_label: str = '') -> str:
+    cleaned = re.sub(r'\s+', ' ', str(text or '')).strip()
+    labels = [source_label, 'Reuters', 'BBC', 'TechCrunch', 'Associated Press', 'AP', 'Al Jazeera', 'NASA', 'Google']
+    labels = [re.escape(label.strip()) for label in labels if label and label.strip()]
+    if labels:
+        cleaned = re.sub(
+            rf'^(?:La|Il|Lo|L’|L\'|The)?\s*({"|".join(labels)})\s+(racconta|riporta|riferisce|segnala|mette in luce|mette a fuoco|descrive|annuncia|conferma)[,:;]?\s+(che\s+)?',
+            '',
+            cleaned,
+            flags=re.IGNORECASE,
+        ).strip()
+    cleaned = re.sub(r'^(Secondo|In un(?:a)?\s+analisi(?:\s+di)?)\s+', '', cleaned, flags=re.IGNORECASE).strip()
+    return cleaned[:1].upper() + cleaned[1:] if cleaned else ''
+
+
 def main():
     news = json.loads(NEWS.read_text(encoding='utf-8'))
     stats = json.loads(STATS.read_text(encoding='utf-8'))
@@ -43,8 +59,8 @@ def main():
     freshness = stats.get('editionUpdatedAt') or (latest.get('timestamp') if latest else '')
 
     summary = (
-        "Il quadro di oggi è più interessante per convergenza che per singola headline. "
-        "Le storie più forti mostrano che il baricentro si sta spostando dall'effetto novità alla capacità di integrare tecnologie, asset industriali e distribuzione in flussi operativi concreti. "
+        "Le storie più forti di oggi hanno un filo comune: contano meno come episodi isolati e di più come segnali di un equilibrio che si sta spostando. "
+        "Il baricentro passa dall'effetto novità alla capacità di integrare tecnologie, asset industriali e distribuzione in flussi operativi concreti. "
         f"Letti insieme, {top[0]['title'] if len(top) > 0 else 'il tema principale'}, {top[1]['title'] if len(top) > 1 else 'il secondo segnale'} e {top[2]['title'] if len(top) > 2 else 'il terzo fronte'} raccontano un mercato che premia esecuzione, presidio dei colli di bottiglia e velocità di messa a terra più dei semplici annunci."
     ) if top else 'Sintesi del giorno in aggiornamento.'
 
@@ -52,7 +68,7 @@ def main():
         f'''<a class="related-card" href="./stories/{html.escape(item['id'])}.html">'''
         f'''<span class="related-kicker">{html.escape(categories.get(item.get('category'), item.get('category','')))}</span>'''
         f'''<strong>{html.escape(item.get('title',''))}</strong>'''
-        f'''<span>{html.escape(item.get('hook',''))}</span></a>'''
+        f'''<span>{html.escape(clean_public_hook(item.get('hook',''), item.get('sourceLabel','')))}</span></a>'''
         for item in top
     )
 

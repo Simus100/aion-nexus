@@ -26,8 +26,8 @@ def build_summary(news, stats):
     top = news[:3]
     dominant = stats.get('topicEmerging', [])[:4]
     summary = (
-        "Il quadro del giorno va letto come convergenza: le storie più forti mostrano uno spostamento "
-        "dall'effetto novità alla capacità di integrare tecnologie, asset industriali e distribuzione in flussi operativi concreti. "
+        "Le storie più forti del giorno mostrano uno spostamento dall'effetto novità "
+        "alla capacità di integrare tecnologie, asset industriali e distribuzione in flussi operativi concreti. "
         "Il mercato premia esecuzione, presidio dei colli di bottiglia e velocità di messa a terra più dei semplici annunci."
     )
     prompt = (

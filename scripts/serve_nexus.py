@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+from mimetypes import guess_type
 from pathlib import Path
 from urllib.parse import urlparse, unquote
 import html
@@ -35,11 +36,48 @@ ROOT_INDEX = """<!doctype html>
 """
 
 class NexusHandler(SimpleHTTPRequestHandler):
+    def _is_proxy_request(self) -> bool:
+        return bool(self.headers.get('X-Forwarded-For') or self.headers.get('X-Real-Ip'))
+
+    def _is_local_admin_request(self) -> bool:
+        host, _port = self.client_address
+        return host in {'127.0.0.1', '::1'} and not self._is_proxy_request()
+
+    def _is_hidden_path(self, path: str) -> bool:
+        parts = [part for part in Path(path).parts if part not in {'/', ''}]
+        return any(part.startswith('.') for part in parts)
+
     def _safe_join(self, rel_path: str) -> Path:
         candidate = (ROOT / rel_path).resolve()
         if candidate != ROOT and ROOT not in candidate.parents:
             return ROOT
         return candidate
+
+    def _serve_public_path(self, rel_path: str):
+        target = self._safe_join(rel_path)
+        if self._is_hidden_path(target.relative_to(ROOT).as_posix()):
+            self.send_error(404, 'File not found')
+            return
+
+        if target.is_dir():
+            target = target / 'index.html'
+
+        if not target.exists() or not target.is_file():
+            self.send_error(404, 'File not found')
+            return
+
+        try:
+            data = target.read_bytes()
+        except OSError:
+            self.send_error(404, 'File not found')
+            return
+
+        content_type = guess_type(str(target))[0] or 'application/octet-stream'
+        self.send_response(200)
+        self.send_header('Content-Type', content_type)
+        self.send_header('Content-Length', str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
 
     def _admin_listing(self, fs_path: Path, request_path: str):
         try:
@@ -119,6 +157,9 @@ class NexusHandler(SimpleHTTPRequestHandler):
             return
 
         if path.startswith('/administration'):
+            if not self._is_local_admin_request():
+                self.send_error(403, 'Forbidden')
+                return
             rel = path[len('/administration'):].lstrip('/')
             target = self._safe_join(rel)
             if target.is_dir():
@@ -132,11 +173,28 @@ class NexusHandler(SimpleHTTPRequestHandler):
             self.send_error(404, 'File not found')
             return
 
-        return super().do_GET()
+        if self._is_hidden_path(path):
+            self.send_error(404, 'File not found')
+            return
+
+        if not (
+            path == '/site'
+            or path.startswith('/site/')
+            or path == '/data'
+            or path.startswith('/data/')
+        ):
+            self.send_error(404, 'File not found')
+            return
+
+        rel_path = path.lstrip('/')
+        self._serve_public_path(rel_path)
+        return
 
     def translate_path(self, path):
         parsed = urlparse(path)
         cleaned = unquote(parsed.path).lstrip('/')
+        if self._is_hidden_path(cleaned):
+            return str(SITE_ROOT / '__blocked__')
         return str((ROOT / cleaned).resolve())
 
 

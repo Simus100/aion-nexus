@@ -1,36 +1,35 @@
 {
-  "editionUpdatedAt": "2026-03-27T23:05:00+01:00",
-  "newsGeneratedToday": 7,
-  "sourcesAnalyzed": 22,
+  "editionUpdatedAt": "2026-07-10T20:00:00+02:00",
+  "newsGeneratedToday": 8,
+  "sourcesAnalyzed": 156,
   "topicEmerging": [
-    "La competizione AI si sposta dal vantaggio di modello alla capacità industriale di produrre, distribuire e finanziare hardware e piattaforme",
-    "I controlli tecnologici USA contano meno come annuncio e più come test di enforcement lungo l’ultima tratta della filiera",
-    "Hormuz resta il punto in cui la sfiducia geopolitica entra più rapidamente in shipping, energia e assicurazioni",
-    "Il conflitto con l’Iran sta irrigidendo funding sovrano, dollaro e premio per il rischio ben oltre il comparto petrolifero",
-    "Wall Street tratta la crisi mediorientale come fattore di correzione più strutturale, non come volatilità passeggera",
-    "Nello spazio la narrativa torna concreta quando Artemis passa dalle slide alle prove finali di missione"
+    "Alle 20:00 l'edizione resta a 8 storie dopo l'analisi di 156 fonti e 6 candidati: entra solo l'aggiornamento BBC sugli incendi in Spagna, perché aumenta il numero dei dispersi e rafforza una storia già rilevante.",
+    "Google e BCE vengono mantenute con i timestamp originali del 7 e 6 luglio: i candidati disponibili coincidono con presidi già selezionati e restano forti per agenti in produzione e politica monetaria.",
+    "Lyzr resta fuori perché la raccolta gestita da un agente è interessante, ma più debole e più duplicativa rispetto a Oratomic, Mercor e Ollama nel blocco startup.",
+    "La continuità viene preservata in modo selettivo: le storie su Hormuz, Bavi, Oratomic, Mercor, Google, BCE e Ollama restano valide, mentre la scheda sugli incendi viene aggiornata perché il nuovo dato migliora freschezza e precisione.",
+    "La priorità editoriale resta sulle fonti dirette e sui segnali con impatto materiale: niente riempitivo, ma aggiornamento quando il candidato migliora davvero l'edizione."
   ],
   "mostViewed": [
-    "Huawei trova la prova del nove: ByteDance e Alibaba pronte a ordinare il nuovo chip AI",
-    "Le rassicurazioni non bastano più: navi cinesi fermano l’uscita da Hormuz e misurano il prezzo della sfiducia",
-    "Wall Street entra in correzione: il Dow certifica che la crisi mediorientale non è più rumore di fondo"
+    "Gli incendi in Spagna fanno almeno 12 morti e 23 dispersi",
+    "Il tifone Bavi minaccia Taiwan dopo le frane mortali nelle Filippine",
+    "Oratomic raccoglie 300 milioni per un computer quantistico da 20 mila qubit"
   ],
   "signals": [
     {
-      "label": "Edition",
-      "value": "Public MVP"
+      "label": "Edizione",
+      "value": "Pubblica"
     },
     {
-      "label": "Cadence",
-      "value": "Hourly auto-refresh · 23:05 CET"
+      "label": "Cadenza",
+      "value": "Aggiornamento ogni ora, 20:00 ora dell'Europa centrale"
     },
     {
-      "label": "Mode",
-      "value": "Italian briefing"
+      "label": "Modalità",
+      "value": "Sintesi in italiano"
     },
     {
-      "label": "Focus",
-      "value": "Source-backed news"
+      "label": "Priorità",
+      "value": "Fonti dirette, freschezza materiale e continuità selettiva"
     }
   ]
 }

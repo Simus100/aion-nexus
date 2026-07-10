@@ -8,6 +8,7 @@ from urllib.parse import quote
 ROOT = Path('/root/.openclaw/workspace/aion-nexus')
 NEWS = ROOT / 'data' / 'news.json'
 CATEGORIES = ROOT / 'data' / 'categories.json'
+HISTORY_DIR = ROOT / 'data' / 'history'
 OUT = ROOT / 'site' / 'stories'
 IMAGE = '/site/assets/aion-brief-generated.jpg'
 SITE_URL = 'https://nexus.universalis.it'
@@ -38,6 +39,36 @@ def fmt_date(ts: str) -> str:
     return ts.replace('T', ' ').replace('+01:00', ' CET').replace('+02:00', ' CEST')
 
 
+def clean_public_hook(text: str, source_label: str = '') -> str:
+    """Keep source attribution in metadata/source rows, not in the subtitle."""
+    cleaned = re.sub(r'\s+', ' ', str(text or '')).strip()
+    if not cleaned:
+        return ''
+    labels = [source_label, 'Reuters', 'BBC', 'TechCrunch', 'Associated Press', 'AP', 'Al Jazeera', 'NASA', 'Google']
+    labels = [re.escape(label.strip()) for label in labels if label and label.strip()]
+    if labels:
+        label_group = '|'.join(labels)
+        cleaned = re.sub(
+            rf'^(?:La|Il|Lo|L’|L\'|The)?\s*({label_group})\s+(racconta|riporta|riferisce|segnala|mette in luce|mette a fuoco|descrive|annuncia|conferma)[,:;]?\s+(che\s+)?',
+            '',
+            cleaned,
+            flags=re.IGNORECASE,
+        ).strip()
+    cleaned = re.sub(r'^(Secondo|In un(?:a)?\s+analisi(?:\s+di)?)\s+', '', cleaned, flags=re.IGNORECASE).strip()
+    return cleaned[:1].upper() + cleaned[1:] if cleaned else ''
+
+
+def split_body_and_context(body: str) -> tuple[list[str], list[str]]:
+    body_parts = []
+    context_parts = []
+    for part in [p.strip() for p in str(body or '').split('\n\n') if p.strip()]:
+        if re.match(r'^(Per\s+AION\s+NEXUS\b|In\s+ottica\s+AION\s+NEXUS\b)', part, flags=re.IGNORECASE):
+            context_parts.append(part)
+        else:
+            body_parts.append(part)
+    return body_parts, context_parts
+
+
 def build_aion_opinion(item: dict, category_name: str) -> str:
     tags = [str(tag).strip() for tag in item.get('tags', []) if str(tag).strip()][:3]
     subcategory = str(item.get('subcategory') or '').strip()
@@ -64,17 +95,45 @@ def build_aion_opinion(item: dict, category_name: str) -> str:
     )
     subcategory_line = f' Nel perimetro {subcategory.lower()}, Aion legge qui un indizio che va oltre il fatto singolo.' if subcategory else ''
     tag_line = f" I segnali su {', '.join(tags)} suggeriscono che il mercato leggerà questa storia soprattutto come test di tenuta e direzione." if tags else ''
-    text = f"Lettura di Aion: sul fronte {category_name.lower()} il punto non è ripetere la cronaca, ma capire se {lens}.{subcategory_line}{tag_line} {intensity}"
+    text = f"Sul fronte {category_name.lower()} il punto non è ripetere la cronaca, ma capire se {lens}.{subcategory_line}{tag_line} {intensity}"
     return re.sub(r'\s+', ' ', text).strip()
+
+
+def story_structured_data(item: dict, category_name: str, canonical: str, image: str, description: str) -> str:
+    keywords = [str(tag).strip() for tag in item.get('tags', []) if str(tag).strip()]
+    payload = {
+        '@context': 'https://schema.org',
+        '@type': 'NewsArticle',
+        'mainEntityOfPage': {'@type': 'WebPage', '@id': canonical},
+        'headline': item.get('title', ''),
+        'description': description,
+        'image': [image],
+        'datePublished': item.get('timestamp', ''),
+        'dateModified': item.get('timestamp', ''),
+        'inLanguage': 'it-IT',
+        'articleSection': category_name,
+        'keywords': keywords,
+        'isAccessibleForFree': True,
+        'author': {'@type': 'Organization', 'name': 'AION NEXUS'},
+        'publisher': {
+            '@type': 'Organization',
+            'name': 'Universalis Produzioni',
+            'logo': {'@type': 'ImageObject', 'url': image},
+        },
+        'citation': item.get('sourceUrl') or '',
+    }
+    return json.dumps(payload, ensure_ascii=False).replace('</', '<\\/')
 
 
 def render_story(item: dict, category_name: str, all_items: list[dict]) -> str:
     slug = story_slug(item)
     title = html.escape(item['title'])
-    description = html.escape(item.get('hook') or item.get('opinion') or '')
+    public_hook = clean_public_hook(item.get('hook') or item.get('opinion') or '', item.get('sourceLabel') or '')
+    description_text = public_hook or item.get('opinion') or ''
+    description = html.escape(description_text)
     canonical = f"{SITE_URL}/site/stories/{quote(slug)}.html"
     image = f"{SITE_URL}{IMAGE}"
-    body_parts = [p.strip() for p in str(item.get('body') or '').split('\n\n') if p.strip()]
+    body_parts, context_parts = split_body_and_context(item.get('body') or '')
     body_html = '\n'.join(f'<p class="story-body">{html.escape(p)}</p>' for p in body_parts)
     tags_html = ''.join(f'<span class="tag-pill">#{html.escape(tag)}</span>' for tag in item.get('tags', []))
     aion_opinion = html.escape(build_aion_opinion(item, category_name))
@@ -91,8 +150,10 @@ def render_story(item: dict, category_name: str, all_items: list[dict]) -> str:
 
     source_url = html.escape(item.get('sourceUrl') or '#')
     source_label = html.escape(item.get('sourceLabel') or 'Fonte')
-    opinion = html.escape(item.get('opinion') or '')
+    opinion_parts = context_parts + ([item.get('opinion')] if item.get('opinion') else [])
+    opinion = html.escape('\n\n'.join(str(part).strip() for part in opinion_parts if str(part).strip()))
     visual_class = VISUAL_CLASS.get(item.get('visual'), '')
+    structured_data = story_structured_data(item, category_name, canonical, image, description_text)
 
     return f'''<!doctype html>
 <html lang="it">
@@ -116,6 +177,7 @@ def render_story(item: dict, category_name: str, all_items: list[dict]) -> str:
     <meta name="twitter:image" content="{image}" />
     <link rel="canonical" href="{canonical}" />
     <link rel="stylesheet" href="../assets/styles.css?v=20260326-1849" />
+    <script type="application/ld+json">{structured_data}</script>
     <style>
       .story-page {{ padding: 24px 0 56px; }}
       .story-page-grid {{ display: grid; gap: 20px; }}
@@ -244,8 +306,50 @@ def render_story(item: dict, category_name: str, all_items: list[dict]) -> str:
 '''
 
 
+def load_story_items() -> list[dict]:
+    items = []
+    seen = set()
+
+    def add_many(payload):
+        for item in payload if isinstance(payload, list) else []:
+            if not isinstance(item, dict):
+                continue
+            key = item.get('id') or item.get('canonicalKey') or item.get('sourceUrl') or item.get('title')
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            items.append(item)
+
+    add_many(json.loads(NEWS.read_text(encoding='utf-8')))
+    if HISTORY_DIR.exists():
+        for path in sorted(HISTORY_DIR.glob('*.json')):
+            if path.name == 'index.json':
+                continue
+            add_many(json.loads(path.read_text(encoding='utf-8')))
+    return items
+
+
+def cleanup_existing_story_pages() -> int:
+    cleaned_count = 0
+    hook_pattern = re.compile(r'(<p class="story-hook">)(.*?)(</p>)', flags=re.S)
+    for path in OUT.glob('*.html'):
+        original = path.read_text(encoding='utf-8')
+        updated = original.replace('Lettura di Aion: ', '')
+
+        def clean_hook_match(match):
+            hook_text = html.unescape(re.sub(r'<[^>]+>', '', match.group(2))).strip()
+            cleaned_hook = clean_public_hook(hook_text)
+            return f'{match.group(1)}{html.escape(cleaned_hook)}{match.group(3)}'
+
+        updated = hook_pattern.sub(clean_hook_match, updated)
+        if updated != original:
+            path.write_text(updated, encoding='utf-8')
+            cleaned_count += 1
+    return cleaned_count
+
+
 def main():
-    news = json.loads(NEWS.read_text(encoding='utf-8'))
+    news = load_story_items()
     categories = {c['id']: c['name'] for c in json.loads(CATEGORIES.read_text(encoding='utf-8'))}
     OUT.mkdir(parents=True, exist_ok=True)
 
@@ -257,7 +361,8 @@ def main():
         target.write_text(html_text, encoding='utf-8')
         generated += 1
 
-    print(f'Generated {generated} story pages in {OUT}')
+    cleaned = cleanup_existing_story_pages()
+    print(f'Generated {generated} story pages in {OUT}; cleaned {cleaned} existing pages')
 
 
 if __name__ == '__main__':
