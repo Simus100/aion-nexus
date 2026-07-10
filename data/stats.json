@@ -1,18 +1,18 @@
 {
-  "editionUpdatedAt": "2026-07-10T20:00:00+02:00",
+  "editionUpdatedAt": "2026-07-10T21:00:00+02:00",
   "newsGeneratedToday": 8,
   "sourcesAnalyzed": 156,
   "topicEmerging": [
-    "Alle 20:00 l'edizione resta a 8 storie dopo l'analisi di 156 fonti e 6 candidati: entra solo l'aggiornamento BBC sugli incendi in Spagna, perché aumenta il numero dei dispersi e rafforza una storia già rilevante.",
-    "Google e BCE vengono mantenute con i timestamp originali del 7 e 6 luglio: i candidati disponibili coincidono con presidi già selezionati e restano forti per agenti in produzione e politica monetaria.",
-    "Lyzr resta fuori perché la raccolta gestita da un agente è interessante, ma più debole e più duplicativa rispetto a Oratomic, Mercor e Ollama nel blocco startup.",
-    "La continuità viene preservata in modo selettivo: le storie su Hormuz, Bavi, Oratomic, Mercor, Google, BCE e Ollama restano valide, mentre la scheda sugli incendi viene aggiornata perché il nuovo dato migliora freschezza e precisione.",
-    "La priorità editoriale resta sulle fonti dirette e sui segnali con impatto materiale: niente riempitivo, ma aggiornamento quando il candidato migliora davvero l'edizione."
+    "Alle 21:00 l'edizione resta a 8 storie dopo l'analisi di 156 fonti e 6 candidati: i nuovi elementi confermano presidi già selezionati oppure risultano meno forti delle storie live più solide.",
+    "Google e BCE vengono mantenute con i timestamp originali del 7 e 6 luglio, perché i candidati disponibili coincidono con schede già pubblicate su agenti Gemini in produzione e politica monetaria legata all'intelligenza artificiale.",
+    "Il candidato TechCrunch su Hugging Face è fresco e coerente con il tema dei modelli aperti, ma resta più debole e più discorsivo rispetto a Ollama, che combina capitale raccolto, quasi 9 milioni di utenti mensili e adozione nelle grandi imprese.",
+    "La scheda BBC sugli incendi in Spagna resta il presidio climatico europeo più aggiornato, mentre Bavi, Hormuz, Oratomic, Mercor, Google, BCE e Ollama mantengono rilevanza materiale per rischio geopolitico, infrastruttura tecnologica e capitale privato.",
+    "La continuità viene preservata senza trasformarsi in inerzia: nessun candidato nuovo supera chiaramente la storia live più debole, quindi l'edizione evita riempitivo e mantiene fonti dirette, freschezza materiale e impatto verificabile."
   ],
   "mostViewed": [
     "Gli incendi in Spagna fanno almeno 12 morti e 23 dispersi",
-    "Il tifone Bavi minaccia Taiwan dopo le frane mortali nelle Filippine",
-    "Oratomic raccoglie 300 milioni per un computer quantistico da 20 mila qubit"
+    "Oratomic raccoglie 300 milioni per un computer quantistico da 20 mila qubit",
+    "Ollama raccoglie 65 milioni e arriva a quasi 9 milioni di utenti"
   ],
   "signals": [
     {
@@ -21,7 +21,7 @@
     },
     {
       "label": "Cadenza",
-      "value": "Aggiornamento ogni ora, 20:00 ora dell'Europa centrale"
+      "value": "Aggiornamento ogni ora, 21:00 ora dell'Europa centrale"
     },
     {
       "label": "Modalità",
