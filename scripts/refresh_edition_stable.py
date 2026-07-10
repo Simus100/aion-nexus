@@ -1,5 +1,3 @@
-Total output lines: 1062
-
 #!/usr/bin/env python3
 import json, os, shutil, subprocess, urllib.request, urllib.parse, xml.etree.ElementTree as ET, hashlib, re, sys, html
 from datetime import datetime
@@ -358,7 +356,253 @@ def generate_editorial_content(signal, scenario, source_label):
         },
         'future_society': {
             'title_prefix': 'La tecnologia cambia il costo della fiducia',
-            'hook': 'Qui entrano in gioco i meccanismi con cui persone, media e organizzazioni disti…2537 tokens truncated…',
+            'hook': 'Qui entrano in gioco i meccanismi con cui persone, media e organizzazioni distinguono il vero dal plausibile.',
+            'body': [
+                'Il tema vero non è solo la nuova capacità tecnica, ma il costo sociale che può generare in verifica, coordinamento e difesa.',
+                'Quando automazione, modelli e strumenti intelligenti avanzano, cambia anche il modo in cui istituzioni e piattaforme devono proteggersi.',
+                'Sono indizi di trasformazione culturale prima ancora che regolatoria.',
+            ],
+            'opinion': 'La tecnologia incide davvero quando costringe a spendere di più per fidarsi del reale.',
+        },
+    }
+
+    profile = translation_map.get(scenario)
+    if not profile:
+        return None
+
+    source_lead = trim_sentence(source_text.split('\n\n')[0], 420)
+    source_mid = trim_sentence(source_text.split('\n\n')[1] if '\n\n' in source_text else source_text, 420)
+    source_tail = trim_sentence(source_text.split('\n\n')[2] if source_text.count('\n\n') >= 2 else source_text, 420)
+
+    def italian_focus_from_title(title):
+        cleaned = clean_raw_title(title)
+        replacements = {
+            'cost': 'costi', 'reliability': 'affidabilità', 'news': 'novità', 'latest': 'ultime mosse',
+            'rescued': 'salvato', 'wounded': 'ferito', 'airman': 'militare', 'launches': 'lancio',
+            'agent': 'agente', 'agents': 'agenti', 'video': 'video', 'model': 'modello',
+            'models': 'modelli', 'market': 'mercato', 'markets': 'mercati', 'science': 'ricerca',
+            'startup': 'startup', 'chips': 'chip', 'chip': 'chip', 'trust': 'fiducia',
+        }
+        words = []
+        for raw in re.findall(r"[A-Za-zÀ-ÿ0-9']+", cleaned):
+            low = raw.lower()
+            mapped = replacements.get(low)
+            if mapped:
+                words.append(mapped)
+            elif raw[:1].isupper() or raw.isupper():
+                words.append(raw)
+            elif low in {'google', 'gemini', 'huawei', 'nature', 'wired', 'cursor', 'polymarket', 'bbc'}:
+                words.append(raw)
+        if not words:
+            return profile['title_prefix']
+        return ' '.join(words[:5])
+
+    focus = italian_focus_from_title(original_title)
+    title = trim_sentence(f"{profile['title_prefix']}: {focus}", 90)
+    hook = trim_sentence(profile['hook'], 200)
+    if len(hook) < 80:
+        hook = trim_sentence(fallback_hook, 200)
+
+    body_parts = [
+        trim_sentence(f"{source_lead} {profile['body'][0]}", 460),
+        trim_sentence(f"{source_mid} {profile['body'][1]}", 460),
+        trim_sentence(f"{source_tail} {profile['body'][2]}", 460),
+    ]
+    body = "\n\n".join(body_parts)
+    body = trim_sentence(body, 1500)
+    if len(body) < 500:
+        return None
+
+    opinion = trim_sentence(profile['opinion'], 150)
+
+    tags = []
+    seen = set()
+    category_label = SCENARIO_CATEGORY.get(scenario, signal.get('category', ''))
+    tag_map = {
+        'ai_agents': ['agenti AI', 'software', 'workflow', 'produttività', 'modelli'],
+        'tech_semis': ['chip', 'filiera', 'infrastruttura', 'tecnologia', 'industria'],
+        'geo_conflict': ['geopolitica', 'rotte', 'energia', 'rischio', 'conflitto'],
+        'macro_rates': ['tassi', 'debito', 'valute', 'capitale', 'macro'],
+        'market_repricing': ['mercati', 'volatilità', 'rischio', 'energia', 'listini'],
+        'startup_capital': ['startup', 'venture', 'finanziamenti', 'scala', 'capitale'],
+        'science_milestone': ['scienza', 'ricerca', 'scoperta', 'innovazione', 'osservazione'],
+        'future_society': ['fiducia', 'automazione', 'media', 'società', 'tecnologia'],
+    }
+    for tok in tag_map.get(scenario, []):
+        key = tok.lower()
+        if key not in seen:
+            tags.append(tok)
+            seen.add(key)
+    for tok in [category_label, source_label, 'analisi', 'AION NEXUS']:
+        key = str(tok).lower()
+        if key not in seen:
+            tags.append(tok)
+            seen.add(key)
+        if len(tags) >= 5:
+            break
+
+    quality = 84 + min(13, max(0, len(source_text) // 350))
+    return {
+        'title': title,
+        'hook': hook,
+        'body': body,
+        'opinion': opinion,
+        'tags': tags[:5],
+        'qualityScore': max(84, min(97, int(quality))),
+    }
+
+
+def slugify(text):
+    s = text.lower()
+    s = re.sub(r'[^a-z0-9]+', '-', s)
+    s = re.sub(r'-+', '-', s).strip('-')
+    return s[:70]
+
+
+def short_hash(text):
+    return hashlib.sha1(text.encode('utf-8')).hexdigest()[:10]
+
+
+def title_norm(text):
+    return re.sub(r'\s+', ' ', (text or '').strip().lower())
+
+
+def text_tokens(text):
+    return [t for t in re.findall(r'[a-z0-9àèéìòù]+', title_norm(text)) if len(t) > 2]
+
+
+def source_label(link, title=''):
+    host = urllib.parse.urlparse(link).netloc.lower().replace('www.', '')
+    if 'reuters.com' in host:
+        return 'Reuters'
+    if 'apnews.com' in host:
+        return 'AP'
+    if 'aljazeera.com' in host:
+        return 'Al Jazeera'
+    if 'techcrunch.com' in host:
+        return 'TechCrunch'
+    if 'theverge.com' in host:
+        return 'The Verge'
+    if 'venturebeat.com' in host or 'feeds.feedburner.com' in host:
+        return 'VentureBeat'
+    if 'marketwatch.com' in host:
+        return 'MarketWatch'
+    if 'cnbc.com' in host:
+        return 'CNBC'
+    if 'nature.com' in host:
+        return 'Nature'
+    if 'science.org' in host:
+        return 'Science'
+    if 'bbc.co.uk' in host or 'bbc.com' in host:
+        return 'BBC'
+    if 'wired.com' in host:
+        return 'Wired'
+    if 'sifted.eu' in host:
+        return 'Sifted'
+    if 'ft.com' in host:
+        return 'FT'
+    if 'bloomberg.com' in host:
+        return 'Bloomberg'
+    if 'wsj.com' in host:
+        return 'WSJ'
+    if 'nytimes.com' in host:
+        return 'NYT'
+    if 'semafor.com' in host:
+        return 'Semafor'
+    if 'arstechnica.com' in host:
+        return 'Ars Technica'
+    if 'ieee.org' in host or 'spectrum.ieee.org' in host:
+        return 'IEEE Spectrum'
+    if 'theguardian.com' in host:
+        return 'Guardian'
+    if 'politico.com' in host:
+        return 'Politico'
+    if 'axios.com' in host:
+        return 'Axios'
+    if 'theinformation.com' in host:
+        return 'The Information'
+    if 'nvidianews.nvidia.com' in host or host == 'nvidia.com' or host.endswith('.nvidia.com'):
+        return 'Nvidia'
+    if 'anthropic.com' in host:
+        return 'Anthropic'
+    if 'scientificamerican.com' in host:
+        return 'Scientific American'
+    if 'technologyreview.com' in host:
+        return 'MIT Technology Review'
+    if 'newscientist.com' in host:
+        return 'New Scientist'
+    if 'ecb.europa.eu' in host:
+        return 'ECB'
+    if host == 'bis.org' or host.endswith('.bis.org'):
+        return 'BIS'
+    return host or 'Source review pending'
+
+
+def classify_source_tier(label):
+    if label in {'Reuters', 'AP', 'BBC', 'Nature', 'Science', 'FT', 'Bloomberg', 'WSJ', 'NYT', 'Guardian', 'ECB', 'BIS'}:
+        return 'high'
+    if label in {'CNBC', 'MarketWatch', 'The Verge', 'TechCrunch', 'VentureBeat', 'Al Jazeera', 'Wired', 'Sifted', 'Semafor', 'Ars Technica', 'IEEE Spectrum', 'Politico', 'Axios', 'The Information', 'Nvidia', 'Anthropic', 'Scientific American', 'MIT Technology Review', 'New Scientist'}:
+        return 'medium'
+    return 'review'
+
+
+def resolve_source_metadata(title, link):
+    label = source_label(link, title)
+    return {
+        'sourceLabel': label,
+        'sourceUrl': link,
+        'sourceTier': classify_source_tier(label),
+        'sourceHost': urllib.parse.urlparse(link).netloc.lower().replace('www.', ''),
+    }
+
+
+def usable_headline(title, link):
+    t = title_norm(title)
+    if not t or len(t.split()) < 6:
+        return False
+    bad = ['the latest:', 'exclusive:', 'breakingviews', 'tech news |', 'world news |', 'business news |', 'markets news |', 'live updates', 'roundup', 'what we know']
+    if any(x in t for x in bad):
+        return False
+    return True
+
+
+def clean_raw_title(raw_title):
+    return re.sub(r'\s+-\s+(Reuters|AP News|BBC|CNBC|MarketWatch|TechCrunch|The Verge|VentureBeat|Nature|Science|Al Jazeera|apnews\.com|marketwatch\.com)\s*$', '', raw_title).strip()
+
+
+def canonical_signal_key(category, raw_title):
+    text = title_norm(clean_raw_title(raw_title))
+    toks = [t for t in text_tokens(text) if t not in {'says','say','amid','after','over','into','with','from','site','news','latest','update'}]
+    return f"{category}:{'-'.join(toks[:8])}"
+
+
+def classify_signal_scenario(category, raw_title):
+    lowered = title_norm(raw_title)
+    if category == 'ai' and any(k in lowered for k in ['agent', 'agents', 'assistant', 'workflow', 'copilot']):
+        return 'ai_agents'
+    if category == 'tech' and any(k in lowered for k in ['chip', 'semiconductor', 'nvidia', 'huawei', 'intel', 'tsmc', 'data center', 'server']):
+        return 'tech_semis'
+    if category == 'geopolitica' and any(k in lowered for k in ['iran', 'israel', 'houthi', 'red sea', 'hormuz', 'war', 'sanction']):
+        return 'geo_conflict'
+    if category == 'finanza' and any(k in lowered for k in ['inflation', 'bond', 'rates', 'imf', 'currency', 'growth forecast', 'debt']):
+        return 'macro_rates'
+    if category == 'mercati' and any(k in lowered for k in ['stocks', 'wall street', 'oil', 'futures', 'correction', 'risk-off', 'volatility']):
+        return 'market_repricing'
+    if category == 'startup' and any(k in lowered for k in ['startup', 'funding', 'seed', 'acquisition', 'venture', 'series a', 'series b']):
+        return 'startup_capital'
+    if category == 'scienza' and any(k in lowered for k in ['study', 'research', 'mission', 'space', 'discovery', 'science']):
+        return 'science_milestone'
+    if category == 'futuro' and any(k in lowered for k in ['deepfake', 'robocall', 'automation', 'robotics', 'society', 'election', 'trust']):
+        return 'future_society'
+    fallback = {
+        'ai': 'ai_agents',
+        'tech': 'tech_semis',
+        'geopolitica': 'geo_conflict',
+        'finanza': 'macro_rates',
+        'mercati': 'market_repricing',
+        'startup': 'startup_capital',
+        'scienza': 'science_milestone',
+        'futuro': 'future_society',
     }
     return fallback.get(category)
 
